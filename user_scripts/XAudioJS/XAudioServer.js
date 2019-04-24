@@ -202,13 +202,22 @@ XAudioServer.prototype.initializeWebAudio = function () {
         }
         var parentObj = this;
         XAudioJSWebAudioWatchDogTimer = setInterval(function () {
-            var timeDiff = (new Date()).getTime() - XAudioJSWebAudioWatchDogLast;
-            if (timeDiff > 500) {
-                parentObj.initializeWebAudio();
-            }
+			if(typeof XAudioJSWebAudioContextHandle.state != "undefined" && XAudioJSWebAudioContextHandle.state === 'suspended') {
+				XAudioJSWebAudioWatchDogLast = (new Date()).getTime();
+				try {
+					XAudioJSWebAudioContextHandle.resume();
+				}
+				catch (e) {}
+			}
+			else {
+				var timeDiff = (new Date()).getTime() - XAudioJSWebAudioWatchDogLast;
+				if (timeDiff > 500) {
+					parentObj.initializeWebAudio();
+				}
+			}
         }, 500);
     }
-	if (this.userEventLatch) {
+	if (this.userEventLatch && typeof XAudioJSWebAudioContextHandle.state != "undefined") {
 		var lazyEnableWA = function () {
 			if(XAudioJSWebAudioContextHandle.state === 'suspended') {
 				XAudioJSWebAudioContextHandle.resume();
