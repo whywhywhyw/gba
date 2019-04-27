@@ -201,7 +201,7 @@ XAudioServer.prototype.initializeWebAudio = function () {
 				else {
 					var timeDiff = (new Date()).getTime() - XAudioJSWebAudioWatchDogLast;
 					if (timeDiff > 500) {
-						parentObj.initializeWebAudio();
+						parentObj.setupWebAudio();
 					}
 				}
 			}
