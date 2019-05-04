@@ -39,7 +39,7 @@ var games = {
     "goldensun":"Golden Sun",
     "gunstar_super_heroes":"Gunstar Super Heroes",
     "hamtaro_heartbreak":"Hamtaro - Ham-Ham Heartbreak",
-	"iridion2":"Iridion II",
+	"iridion":"Iridion 3D",
     "kirbymirror":"Kirby & The Amazing Mirror",
     "kirbynightmare":"Kirby: Nightmare in Dreamland",
     "mariokart":"Mario Kart: Super Circuit",
