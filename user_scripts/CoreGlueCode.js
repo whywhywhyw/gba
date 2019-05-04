@@ -212,7 +212,6 @@ function downloadROM(gamename) {
 function registerROM() {
     clearTempString();
     processDownload(this, attachROM);
-	IodineGUI.Iodine.play();
 }
 function registerIodineHandler() {
     try {
