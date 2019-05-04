@@ -175,10 +175,6 @@ var IodineGUI = {
     }
 };
 window.onload = function () {
-	if (!games[location.hash.substr(1)]) {
-		alert("Invalid game request!");
-		return;
-	}
     //Populate settings:
     registerDefaultSettings();
     //Initialize Iodine:
@@ -195,6 +191,10 @@ window.onload = function () {
     registerGUIEvents();
     //Register GUI settings.
     registerGUISettings();
+	if (!games[location.hash.substr(1)]) {
+		alert("Invalid game request!");
+		return;
+	}
 	//Download the BIOS:
     downloadBIOS();
 }
@@ -212,6 +212,7 @@ function downloadROM(gamename) {
 function registerROM() {
     clearTempString();
     processDownload(this, attachROM);
+	IodineGUI.Iodine.play();
 }
 function registerIodineHandler() {
     try {
