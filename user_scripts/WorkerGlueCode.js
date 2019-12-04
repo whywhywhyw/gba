@@ -1,6 +1,6 @@
 "use strict";
 /*
- Copyright (C) 2012-2017 Grant Galitz
+ Copyright (C) 2012-2019 Grant Galitz
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -57,8 +57,8 @@ IodineGBAWorkerShim.prototype.restart = function () {
     this.sendMessageSingle(2);
 }
 IodineGBAWorkerShim.prototype.setIntervalRate = function (rate) {
-    rate = rate | 0;
-    this.sendMessageDouble(3, rate | 0);
+    rate = +rate;
+    this.sendMessageDouble(3, +rate);
 }
 IodineGBAWorkerShim.prototype.timerCallback = function (timestamp) {
     timestamp = timestamp >>> 0;
@@ -257,7 +257,7 @@ IodineGBAWorkerShim.prototype.graphicsHeartBeat = function () {
         //Copy the buffer out to local:
         this.consumeGraphicsBuffer();
         //Wake up the producer thread:
-        Atomics.wake(this.gfxCounters, 2, 1);
+        Atomics.notify(this.gfxCounters, 2, 1);
     }
 }
 IodineGBAWorkerShim.prototype.consumeGraphicsBuffer = function () {

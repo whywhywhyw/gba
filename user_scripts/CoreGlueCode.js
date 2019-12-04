@@ -122,7 +122,7 @@ var IodineGUI = {
     mixerInput:null,
     currentSpeed:[false,0],
     defaults:{
-        timerRate:16,
+        timerRate:8,
         sound:true,
         volume:1,
         skipBoot:false,
@@ -179,8 +179,8 @@ window.onload = function () {
     registerDefaultSettings();
     //Initialize Iodine:
     registerIodineHandler();
-    //Initialize the timer:
-    registerTimerHandler();
+	//Initialize the timer:
+	calculateTiming();
     //Initialize the graphics:
     registerBlitterHandler();
     //Initialize the audio:
@@ -222,16 +222,19 @@ function registerIodineHandler() {
         if (typeof SharedArrayBuffer != "function" || typeof Atomics != "object") {
             throw null;
         }
-        else if (!IodineGUI.defaults.toggleOffthreadCPU) {
+        else if (!IodineGUI.defaults.toggleOffthreadCPU && IodineGUI.defaults.toggleOffthreadGraphics) {
             //Try starting Iodine normally, but initialize offthread gfx:
             IodineGUI.Iodine = new IodineGBAWorkerGfxShim();
         }
-        else {
+        else if (IodineGUI.defaults.toggleOffthreadGraphics) {
             //Try starting Iodine in a webworker:
             IodineGUI.Iodine = new IodineGBAWorkerShim();
             //In order for save on page unload, this needs to be done:
             addEvent("beforeunload", window, registerBeforeUnloadHandler);
         }
+		else {
+			throw null;
+		}
     }
     catch (e) {
         //Otherwise just run on-thread:
@@ -245,14 +248,32 @@ function registerBeforeUnloadHandler(e) {
     }
     return "IodineGBA needs to process your save data, leaving now may result in not saving current data.";
 }
-function registerTimerHandler() {
-    IodineGUI.defaults.timerRate = 16;
-    IodineGUI.Iodine.setIntervalRate(IodineGUI.defaults.timerRate | 0);
-}
 function initTimer() {
+	IodineGUI.Iodine.setIntervalRate(+IodineGUI.defaults.timerRate);
     IodineGUI.coreTimerID = setInterval(function () {
         IodineGUI.Iodine.timerCallback(((+(new Date()).getTime()) - (+IodineGUI.startTime)) >>> 0);
     }, IodineGUI.defaults.timerRate | 0);
+}
+function calculateTiming() {
+	IodineGUI.Iodine.setIntervalRate(+IodineGUI.defaults.timerRate);
+}
+function startTimer() {
+	IodineGUI.coreTimerID = setInterval(function () {
+        IodineGUI.Iodine.timerCallback(((+(new Date()).getTime()) - (+IodineGUI.startTime)) >>> 0);
+    }, IodineGUI.defaults.timerRate | 0);
+}
+function updateTimer(newRate) {
+	newRate = newRate | 0;
+	if ((newRate | 0) != (IodineGUI.defaults.timerRate | 0)) {
+		IodineGUI.defaults.timerRate = newRate | 0;
+		IodineGUI.Iodine.setIntervalRate(+IodineGUI.defaults.timerRate);
+		if (IodineGUI.isPlaying) {
+			if (IodineGUI.coreTimerID) {
+				clearInterval(IodineGUI.coreTimerID);
+			}
+			initTimer();
+		}
+	}
 }
 function registerBlitterHandler() {
     IodineGUI.Blitter = new GfxGlueCode(240, 160);
